@@ -1,6 +1,5 @@
 require 'rubygems'
 require 'sinatra'
-require 'pry'
 
 set :sessions, true
 
@@ -55,20 +54,20 @@ helpers do
     @play_again = true
     @show_hit_or_stay_buttons = false
     session[:player_pot] = session[:player_pot] + session[:player_bet]
-    @winner = "<strong>#{session[:player_name]} wins!</strong> #{msg}"
+    @success = "<strong>#{session[:player_name]} wins!</strong> #{msg}"
   end
 
   def loser!(msg)
     @play_again = true
     @show_hit_or_stay_buttons = false
     session[:player_pot] = session[:player_pot] - session[:player_bet]
-    @loser = "<strong>#{session[:player_name]} loses.</strong> #{msg}"
+    @error = "<strong>#{session[:player_name]} loses.</strong> #{msg}"
   end
 
   def tie!(msg)
     @play_again = true
     @show_hit_or_stay_buttons = false
-    @winner = "<strong>It's a tie!</strong> #{msg}"
+    @success = "<strong>It's a tie!</strong> #{msg}"
   end
 end
 
@@ -90,7 +89,6 @@ get '/new_player' do
 end
 
 post '/new_player' do
-
   if params[:player_name].empty?
     @error = "Name is required"
     halt erb(:new_player)
@@ -147,7 +145,7 @@ post '/game/player/hit' do
     loser!("It looks like #{session[:player_name]} busted at #{player_total}.")
   end
 
-  erb :game, layout: false
+  erb :game
 end
 
 post '/game/player/stay' do
@@ -175,7 +173,7 @@ get '/game/dealer' do
     @show_dealer_hit_button = true
   end
 
-  erb :game, layout: false
+  erb :game
 end
 
 post '/game/dealer/hit' do
@@ -197,7 +195,7 @@ get '/game/compare' do
     tie!("Both #{session[:player_name]} and the dealer stayed at #{player_total}.")
   end
 
-  erb :game, layout: false
+  erb :game
 end
 
 get '/game_over' do
